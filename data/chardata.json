@@ -1,0 +1,155 @@
+{
+  "classes": {
+    "warrior": {
+      "stats": {
+        "str": 5,
+        "stam": 5,
+        "smt": -5,
+        "melee": 20
+      }
+    },
+    "magician": {
+      "stats": {
+        "smt": 5,
+        "sag": 5,
+        "stam": -5,
+        "magic": 20
+      }
+    },
+    "warlock": {
+      "stats": {
+        "str": 5,
+        "sag": -5,
+        "smt": 5,
+        "melee": 10,
+        "magic": 10
+      }
+    }
+  },
+  "races": {
+    "human": {
+      "name": "Human",
+      "stats": {
+        "str": 20,
+        "stam": 20,
+        "spd": 20,
+        "skl": 20,
+        "sag": 20,
+        "smt": 20,
+        "melee": 0,
+        "magic": 0
+      }
+    },
+    "korashi": {
+      "name": "Korashi Orc",
+      "stats": {
+        "str": 30,
+        "stam": 25,
+        "spd": 20,
+        "skl": 10,
+        "sag": 20,
+        "smt": 20,
+        "melee": 10,
+        "magic": -10
+      }
+    },
+    "khaladim": {
+      "name": "Khaladim Orc",
+      "stats": {
+        "str": 25,
+        "stam": 20,
+        "spd": 20,
+        "skl": 15,
+        "sag": 20,
+        "smt": 20,
+        "melee": 10,
+        "magic": 0
+      }
+    },
+    "dwarf": {
+      "name": "Dvergr",
+      "stats": {
+        "str": 25,
+        "stam": 30,
+        "spd": 10,
+        "skl": 20,
+        "sag": 15,
+        "smt": 20,
+        "melee": 0,
+        "magic": 0
+      }
+    },
+    "elf": {
+      "name": "Elf",
+      "stats": {
+        "str": 15,
+        "stam": 10,
+        "spd": 20,
+        "skl": 20,
+        "sag": 25,
+        "smt": 30,
+        "melee": 0,
+        "magic": 10
+      }
+    }
+  },
+  "weapons": {
+    "dagger": {
+      "name": "Dagger",
+      "durability": 50,
+      "damage": [
+        1,
+        4
+      ],
+      "cost": 1,
+      "crit": [
+        "stun 1"
+      ]
+    },
+    "shortsword": {
+      "name": "Shortsword",
+      "durability": 65,
+      "damage": [
+        1,
+        6
+      ],
+      "cost": 8,
+      "crit": [
+        "damage (2, 8)"
+      ]
+    },
+    "longsword": {
+      "name": "Longsword",
+      "durability": 75,
+      "damage": [
+        1,
+        8
+      ],
+      "crit": [
+        "bleed 5"
+      ]
+    }
+  },
+  "armor": {
+    "padded": {
+      "name": "Padded Leather",
+      "durability": 50,
+      "defense": 2
+    },
+    "chain": {
+      "name": "Chain Hauberk",
+      "durability": 75,
+      "defense": 3
+    },
+    "halfplate": {
+      "name": "Half Plate",
+      "durability": 100,
+      "defense": 4
+    },
+    "fullplate": {
+      "name": "Full Plate",
+      "durability": 125,
+      "defense": 5
+    }
+  }
+}
