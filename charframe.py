@@ -9,13 +9,13 @@ def create_label(master, caption: str, row: int, column: int, width: int=8) -> L
 
 def create_int_label(master, row: int, column: int, init_value=0) -> Tuple[Label, IntVar]:
     v = IntVar(value=init_value)
-    l = Label(master, textvariable=v)
+    l = Label(master, textvariable=v, anchor='w')
     l.grid(row=row, column=column)
     return (l, v)
 
 def create_str_label(master, row: int, column: int, init_value=None) -> Tuple[Label, StringVar]:
     v = StringVar(value=init_value)
-    l = Label(master, textvariable=v)
+    l = Label(master, textvariable=v, anchor='w')
     l.grid(row=row, column=column)
     return (l, v)
 
@@ -150,7 +150,7 @@ class CharFrame(Frame):
         self.character = character
         
         name_label = Label(self, text=character.name)
-        name_label.grid(column=0, row=0, columnspan=2)
+        name_label.grid(column=0, row=0, columnspan=3)
         
         self.stat_frame = StatFrame(self, self.character.stats)
         self.stat_frame.grid(row=1, column=0)

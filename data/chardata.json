@@ -151,5 +151,25 @@
       "durability": 125,
       "defense": 5
     }
+  },
+  "implements": {
+    "brass rod": {
+      "name": "Brass Rod",
+      "durability": 75,
+      "damage": [
+        1,
+        3
+      ],
+      "pwr": 10
+    },
+    "oak staff": {
+      "name": "Oak Staff",
+      "durability": 50,
+      "damage": [
+        1,
+        6
+      ],
+      "pwr": 10
+    }
   }
 }

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Tuple, Optional
 
 @dataclass
 class DurableItem:
@@ -32,6 +32,7 @@ class ArmorStats(DurableItem):
 class WeaponStats(DurableItem):
     """Represents weapon stats."""
     damage: Tuple[int, int]
+    crit: Optional[str] = None
 
     def __str__(self):
         low, high = self.damage
@@ -45,4 +46,4 @@ class ImplementStats(DurableItem):
 
     def __str__(self):
         low, high = self.damage
-        return f"{self.name} (Pwr {self.pwr} Dmg {low}-{high} Dur {self.durability}/{self.max_dur}"
+        return f"{self.name} (Pwr {self.pwr} Dmg {low}-{high} Dur {self.durability}/{self.max_dur})"
