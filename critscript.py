@@ -4,12 +4,12 @@ from typing import Coroutine, Iterable, List, Union
 from character import Character
 from combat import apply_effect, remove_effect, hit, damage
 
-do_pattern = re.compile(r"do (?P<times>\d+) times")
-atk_pattern = re.compile(r"atk\((?P<atk_stat>atp|pwr) vs (?P<defense_stat>\d+|tou|wil|dfp)\)")
-comment_pattern = re.compile(r"#.*")
-dmg_pattern = re.compile(r"damage (?P<dtype>body|soul|mind) (?P<dmg>weapon|\d+d\d+(?:\+.+)*)")
-eff_pattern = re.compile(r"effect (?P<eff>[a-z]+)\s+(?P<duration>\d+)(?:$|\s+(?P<potency>\d+))")
-dice_pattern = re.compile(r"(?P<num>\d+)d(?P<sides>\d+)(?P<mods>(?:\+(?:\d+|IMP|STRMOD|SKLMOD))*)")
+DO_PATTERN = re.compile(r"do (?P<times>\d+) times")
+ATK_PATTERN = re.compile(r"atk\((?P<atk_stat>atp|pwr) vs (?P<defense_stat>\d+|tou|wil|dfp)\)")
+COMMENT_PATTERN = re.compile(r"#.*")
+DMG_PATTERN = re.compile(r"damage (?P<dtype>body|soul|mind) (?P<dmg>weapon|\d+d\d+(?:\+.+)*)")
+EFF_PATTERN = re.compile(r"effect (?P<eff>[a-z]+)\s+(?P<duration>\d+)(?:$|\s+(?P<potency>\d+))")
+DICE_PATTERN = re.compile(r"(?P<num>\d+)d(?P<sides>\d+)(?P<mods>(?:\+(?:\d+|IMP|STRMOD|SKLMOD))*)")
 
 class CritScriptSyntaxError(Exception):
     """Custom exception raised when CritScript errors occur."""
@@ -109,22 +109,22 @@ def crit_compile(code: Union[List[str], str]) -> List[str]:
                 raise NestedCritBlockError(line_no, line)
             crit_open = True
             last_crit_idx = line_no
-        elif do_pattern.match(line):
+        elif DO_PATTERN.match(line):
             if do_open:
                 raise NestedDoBlockError(line_no, line)
             do_open = True
             last_do_idx = line_no
             last_do_line = line
-        elif atk_pattern.match(line):
+        elif ATK_PATTERN.match(line):
             if atk_open:
                 raise NestedAtkBlockError(line_no, line)
             atk_open = True
             last_atk_idx = line_no
             last_atk_line = line
-        elif eff_pattern.match(line):
+        elif EFF_PATTERN.match(line):
             #TODO: check effect against effect names
             pass
-        elif dmg_pattern.match(line):
+        elif DMG_PATTERN.match(line):
             pass
         else:
             raise UnknownCritSyntaxError(line_no, line)
