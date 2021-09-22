@@ -11,10 +11,25 @@ class DamageType(Enum):
     SOUL = auto()
 
 class Effect:
-    """Describes a game effect."""
+    """
+    Describes a game effect. Effects have four lifecycle functions
+    that are called at appropriate times and specific effects should override them:
+
+    * `on_apply` occurs when a character receives the effect.
+    * `on_tick` occurs each combat turn.
+    * `on_merge` occurs when a character receives another copy of the same effect.
+    By default, the current effect is retained with the duration of the incoming copy.
+    * `on_remove` occurs when a character loses this effect, either through its duration
+    expiring or through some combat action removing it.
+
+    This is an abstract class.
+    """
     IMMEDIATE: int = -1
     
     def __init__(self, name: str, duration: int, potency: int):
+        """
+        Game effects can be described and operated on in terms of their `potency` and `duration`. The effect's `name` should be unique.
+        """
         self.name = name
         self.duration = duration
         self.potency = potency
@@ -31,20 +46,11 @@ class Effect:
         self.duration = eff.duration
     
     def on_tick(self, bearer: Character):
-        """
-        Triggers every turn for `bearer`.
-        By default, reduces duration and calls `on_remove` 
-        when duration is zero.
-        """
-        self.duration -= 1
-        if self.duration == 0:
-            self.on_remove(bearer)
+        """Triggers every turn for `bearer`."""
+        pass
     
     def on_apply(self, bearer: Character):
-        """
-        Triggers when an effect is applied.
-        Attempts to merge if this effect is on `bearer` already.
-        """
+        """Triggers when an effect is applied."""
         pass
 
 @dataclass
@@ -273,20 +279,6 @@ class Character:
             return None
         
         return effs[0]
-    
-    def add_effect(self, eff: Effect):
-        """Adds effect `eff`."""
-        maybe_eff = self.find_effect(eff.name)
-        if maybe_eff:
-            maybe_eff.on_merge(eff)
-        else:
-            self.effects.add(eff)
-            eff.on_apply(self)
-    
-    def remove_effect(self, eff: Effect):
-        """Removes effect `eff`."""
-        eff.on_remove(self)
-        self.effects.remove(eff)
 
 
 

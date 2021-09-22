@@ -119,6 +119,21 @@ class Weakness(StatChange):
             BaseStats(strength=-10, stamina=-10)
         )
 
+class Shield(Effect):
+    """
+    Describes a Shielding effect.
+    Damage of any type will reduce the potency of a shield before dealing damage.
+    At potency 0, shield breaks and effect is removed.
+    Generally caused by magic.
+    """
+
+    def __init__(self, duration: int, potency: int):
+        super().__init__("Shield", duration, potency)
+
+    def on_tick(self):
+        if self.potency <= 0:
+            self.duration = 0
+
 
 
 
