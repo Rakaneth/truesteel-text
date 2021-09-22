@@ -1,7 +1,9 @@
+import critscript as cr
+
 from unittest import TestCase
 from charfactory import build_char
 from equipfactory import make_armor, make_implement, make_weapon
-from critscript import compile, CritScriptSyntaxError
+
 
 class TestCritScript(TestCase):
     def setUp(self):
@@ -66,31 +68,31 @@ do 2 times
 done"""
         
     def test_oneliners(self):
-        bleed1 = compile("Effect Bleed 1")
-        shield = compile("Effect Shield 10 100")
-        body_imp = compile("Damage Body 1d4+IMP")
-        soul_weap = compile("Damage Soul WEAPON")
+        bleed1 = cr.crit_compile("Effect Bleed 1")
+        shield = cr.crit_compile("Effect Shield 10 100")
+        body_imp = cr.crit_compile("Damage Body 1d4+IMP")
+        soul_weap = cr.crit_compile("Damage Soul WEAPON")
 
         self.assertListEqual(bleed1, ["effect bleed 1"])
         self.assertListEqual(shield, ["effect shield 10 100"])
         self.assertListEqual(body_imp, ["damage body 1d4+imp"])
         self.assertListEqual(soul_weap, ["damage soul weapon"])
-        self.assertRaises(CritScriptSyntaxError, compile, "Unknown")
+        self.assertRaises(cr.UnknownCritSyntaxError, cr.crit_compile, "Unknown")
     
     def test_arrays(self):
-        em_compiled = compile(self.emberspark_ary)
-        sv_compiled = compile(self.savagery_ary)
+        em_compiled = cr.crit_compile(self.emberspark_ary)
+        sv_compiled = cr.crit_compile(self.savagery_ary)
         self.assertListEqual(em_compiled, self.emberspark_expected)
         self.assertListEqual(sv_compiled, self.savagery_expected)
 
     def test_string(self):
-        em_compiled = compile(self.emberspark_str)
-        sv_compiled = compile(self.savagery_str)
+        em_compiled = cr.crit_compile(self.emberspark_str)
+        sv_compiled = cr.crit_compile(self.savagery_str)
         self.assertListEqual(em_compiled, self.emberspark_expected)
         self.assertListEqual(sv_compiled, self.savagery_expected)
     
     def test_do_failures(self):
-        do_before_done = """
+        done_before_do = """
         done
         atk(atp vs tou)
             Effect Bleed 1
@@ -113,7 +115,7 @@ done"""
         do 2 times
             Effect Shield 10 100
         done
-        do
+        do 18 times
             Effect Bleed 10
         """
         nested_do = """
@@ -125,8 +127,8 @@ done"""
             endatk
         done
         """
-        self.assertRaises(CritScriptSyntaxError, compile, do_before_done)
-        self.assertRaises(CritScriptSyntaxError, compile, no_done)
-        self.assertRaises(CritScriptSyntaxError, compile, no_do)
-        self.assertRaises(CritScriptSyntaxError, compile, odd_do)
-        self.assertRaises(CritScriptSyntaxError, compile, nested_do)
+        self.assertRaises(cr.EarlyDoneError, cr.crit_compile, done_before_do)
+        self.assertRaises(cr.NoDoneError, cr.crit_compile, no_done)
+        self.assertRaises(cr.EarlyDoneError, cr.crit_compile, no_do)
+        self.assertRaises(cr.NoDoneError, cr.crit_compile, odd_do)
+        self.assertRaises(cr.NestedDoBlockError, cr.crit_compile, nested_do)
