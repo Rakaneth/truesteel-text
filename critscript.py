@@ -10,7 +10,6 @@ ATK_PATTERN = re.compile(r"atk\((?P<atk_stat>atp|pwr) vs (?P<defense_stat>\d+|to
 COMMENT_PATTERN = re.compile(r"#.*")
 DMG_PATTERN = re.compile(r"damage (?P<dtype>body|soul|mind) (?P<dmg>weapon|\d+d\d+(?:\+.+)*)")
 EFF_PATTERN = re.compile(r"effect (?P<eff>[a-z]+)\s+(?P<duration>\d+)(?:$|\s+(?P<potency>\d+))")
-DICE_PATTERN = re.compile(r"(?P<num>\d+)d(?P<sides>\d+)(?P<mods>(?:\+(?:\d+|IMP|STRMOD|SKLMOD))*)")
 EFF_NAMES = [name.value.lower() for name in EffectNames]
 
 class CritScriptSyntaxError(Exception):

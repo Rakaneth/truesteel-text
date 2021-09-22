@@ -1,21 +1,54 @@
+import re
+
 from character import Character, DamageType, Effect
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from collections import namedtuple
 from random import randint
 
+
 RollResult = namedtuple('RollResult', ('roll', 'target', 'success', 'threshold', 'crit'))
+DICE_PATTERN = re.compile(r"(?P<num>\d+)d(?P<sides>\d+)(?:(?P<num_bonus>(?:\+|\-)\d+))?(?:\+(?P<stat_bonus>imp|strmod|sklmod))?")
 
 class BadStatError(Exception):
     """Custom exception for bad stats passed to `attack`."""
     pass
 
-def dice(sides: int, num: int=1) -> int:
-    """Rolls `num`d`sides`. `num` defaults to 1."""
+class BadDiceError(Exception):
+    """Custom exception for bad dice passed to `dice_str`. """
+    def __init__(self, bad_str: str):
+        super().__init__(f"{bad_str} is not a valid dice string.")
+
+def dice(sides: int, num: int=1, bonus=0) -> int:
+    """
+    Rolls `num`d`sides`+`bonus`. 
+    `num` defaults to 1.
+    `bonus` defaults to 0.
+    """
     acc = 0
     for _ in range(num):
         acc += randint(1, sides)
     
-    return acc
+    return acc + bonus
+
+def dice_str(d_str: str) -> int:
+    """
+    Parses `d_str` in standard dice notation and rolls the result.
+    Discards character values like +IMP or +STRMOD.
+    Used primarily for rolling weapon damage.
+    """
+    dice_match = DICE_PATTERN.match(d_str)
+    if not dice_match:
+        raise BadDiceError(d_str)
+    
+    num = int(dice_match.group("num"))
+    sides = int(dice_match.group("sides"))
+    bonus_str = dice_match.groupdict().get("num_bonus", None)
+    bonus = 0
+
+    if bonus_str:
+        bonus = int(dice_match.group("num_bonus"))
+    
+    return dice(sides, num, bonus)
 
 def d100() -> int:
     """Convenience method for rolling a d100. Most rolls in the combat system are d100s."""
