@@ -78,6 +78,7 @@ done"""
         self.assertListEqual(body_imp, ["damage body 1d4+imp"])
         self.assertListEqual(soul_weap, ["damage soul weapon"])
         self.assertRaises(cr.UnknownCritSyntaxError, cr.crit_compile, "Unknown")
+        self.assertRaises(cr.BadEffectError, cr.crit_compile, "Effect Bad 12")
     
     def test_arrays(self):
         em_compiled = cr.crit_compile(self.emberspark_ary)
@@ -132,3 +133,5 @@ done"""
         self.assertRaises(cr.EarlyDoneError, cr.crit_compile, no_do)
         self.assertRaises(cr.NoDoneError, cr.crit_compile, odd_do)
         self.assertRaises(cr.NestedDoBlockError, cr.crit_compile, nested_do)
+    
+

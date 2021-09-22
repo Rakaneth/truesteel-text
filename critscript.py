@@ -3,6 +3,7 @@ import re
 from typing import Coroutine, Iterable, List, Union
 from character import Character
 from combat import apply_effect, remove_effect, hit, damage
+from effects import EffectNames
 
 DO_PATTERN = re.compile(r"do (?P<times>\d+) times")
 ATK_PATTERN = re.compile(r"atk\((?P<atk_stat>atp|pwr) vs (?P<defense_stat>\d+|tou|wil|dfp)\)")
@@ -10,6 +11,7 @@ COMMENT_PATTERN = re.compile(r"#.*")
 DMG_PATTERN = re.compile(r"damage (?P<dtype>body|soul|mind) (?P<dmg>weapon|\d+d\d+(?:\+.+)*)")
 EFF_PATTERN = re.compile(r"effect (?P<eff>[a-z]+)\s+(?P<duration>\d+)(?:$|\s+(?P<potency>\d+))")
 DICE_PATTERN = re.compile(r"(?P<num>\d+)d(?P<sides>\d+)(?P<mods>(?:\+(?:\d+|IMP|STRMOD|SKLMOD))*)")
+EFF_NAMES = [name.value.lower() for name in EffectNames]
 
 class CritScriptSyntaxError(Exception):
     """Custom exception raised when CritScript errors occur."""
@@ -88,7 +90,9 @@ def crit_compile(code: Union[List[str], str]) -> List[str]:
         if not ln.strip().startswith('#')
         if len(ln.strip()) > 0]
     
+    
     for line_no, line in enumerate(stripped_code):
+        eff = EFF_PATTERN.match(line)
         if line == "endcrit":
             if not crit_open:
                 raise EarlyEndCritError(line_no, line)
@@ -121,9 +125,9 @@ def crit_compile(code: Union[List[str], str]) -> List[str]:
             atk_open = True
             last_atk_idx = line_no
             last_atk_line = line
-        elif EFF_PATTERN.match(line):
-            #TODO: check effect against effect names
-            pass
+        elif eff:
+            if eff.group("eff") not in EFF_NAMES:
+                raise BadEffectError(line_no, line)
         elif DMG_PATTERN.match(line):
             pass
         else:

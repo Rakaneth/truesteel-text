@@ -1,5 +1,23 @@
 from character import BaseStats, Effect, Character, DamageType
 from random import randint
+from enum import Enum
+
+
+class EffectNames(Enum):
+    """
+    Holds the strings of effect names.
+    Mostly for IDE auto-completion and typo avoidance.
+    """
+    DAMAGE = "Damage"
+    BURN = "Burn"
+    SOULBURN = "Soulburn"
+    BLEED = "Bleed"
+    STUN = "Stun"
+    MIGHT = "Might"
+    WEAKNESS = "Weakness"
+    SHIELD = "Shield"
+
+
 
 class Damage(Effect):
     """
@@ -7,7 +25,7 @@ class Damage(Effect):
     Used by spells and crit effects.
     """
     def __init__(self, low: int, high: int, dtype: DamageType):
-        super().__init__("damage", Effect.IMMEDIATE, 0)
+        super().__init__(EffectNames.DAMAGE, Effect.IMMEDIATE, 0)
         self.potency = randint(low, high)
         self.type = dtype
     
@@ -46,7 +64,7 @@ class Burn(DOT):
     """
 
     def __init__(self, duration: int):
-        super().__init__("Burning", duration, 3, DamageType.BODY)
+        super().__init__(EffectNames.BURN, duration, 3, DamageType.BODY)
     
     def on_merge(self, eff: Effect):
         self.duration += eff.duration
@@ -60,7 +78,7 @@ class Bleed(DOT):
     """
 
     def __init__(self, duration: int):
-        super().__init__("Bleeding", duration, 1, DamageType.BODY)
+        super().__init__(EffectNames.BLEED, duration, 1, DamageType.BODY)
     
     def on_merge(self, eff: Effect):
         self.duration = eff.duration
@@ -99,7 +117,7 @@ class Might(StatChange):
     
     def __init__(self, duration: int, base_stats: BaseStats):
         super().__init__(
-            "Might", 
+            EffectNames.MIGHT, 
             duration, 
             base_stats,
             BaseStats(strength=10, stamina=10)
@@ -113,7 +131,7 @@ class Weakness(StatChange):
     """
     def __init__(self, duration: int, base_stats: BaseStats):
         super().__init__(
-            "Weakness",
+            EffectNames.WEAKNESS,
             duration,
             base_stats,
             BaseStats(strength=-10, stamina=-10)
@@ -128,11 +146,22 @@ class Shield(Effect):
     """
 
     def __init__(self, duration: int, potency: int):
-        super().__init__("Shield", duration, potency)
+        super().__init__(EffectNames.SHIELD, duration, potency)
 
     def on_tick(self):
         if self.potency <= 0:
             self.duration = 0
+
+class Stun(Effect):
+    """
+    Describes a Stun effect.
+    This is just a marker for now. Combat code will
+    check it at the start of bearer's turn.
+    Stunned characters cannot act.
+    """
+
+    def __init__(self, duration: int):
+        super().__init__(EffectNames.STUN, duration, 0)
 
 
 
