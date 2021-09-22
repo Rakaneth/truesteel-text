@@ -1,6 +1,6 @@
 import re
 
-from typing import Iterable, List, Union
+from typing import Coroutine, Iterable, List, Union
 from character import Character
 from combat import apply_effect, remove_effect, hit, damage
 
@@ -24,9 +24,9 @@ def compile(code: Union[List[str], str]) -> List[str]:
     else:
         raw_code = code
     
-    raw_endcrit = True
-    raw_done = True
-    raw_endatk = True
+    do_open = False
+    atk_open = False
+    crit_open = False
 
     stripped_code = [
         ln.strip().lower() 
@@ -36,38 +36,47 @@ def compile(code: Union[List[str], str]) -> List[str]:
     
     for line_number, line in enumerate(stripped_code):
         if line == "endcrit":
-            if raw_endcrit:
+            if not crit_open:
                 raise CritScriptSyntaxError(line_number, line, "endcrit before crit")
             else:
-                raw_endcrit = True
+                crit_open = False
         elif line == "endatk":
-            if raw_endatk:
+            if not atk_open:
                 raise CritScriptSyntaxError(line_number, line, "endatk before atk")
             else:
-                raw_endatk = True
+                atk_open = False
         elif line == "done":
-            if raw_done:
+            if not do_open:
                 raise CritScriptSyntaxError(line_number, line, "done before do")
             else:
-                raw_done = True
+                do_open = False
         elif line == "crit": 
-            if not "endcrit" in stripped_code[line_number:]:
-                raise CritScriptSyntaxError(line_number, line, "crit without endcrit")
-            raw_endcrit = False
+            if crit_open:
+                raise CritScriptSyntaxError(line_number, line, "nested crit blocks")
+            crit_open = True
         elif do_pattern.match(line):
-            if not "done" in stripped_code[line_number:]:
-                raise CritScriptSyntaxError(line_number, line, "do without done")
-            raw_done = False
+            if do_open:
+                raise CritScriptSyntaxError(line_number, line, "nested do blocks")
+            do_open = True
         elif atk_pattern.match(line):
-            if not "endatk" in stripped_code[line_number:]:
-                raise CritScriptSyntaxError(line_number, line, "atk without endatk")
-            raw_endatk = False
+            if atk_open:
+                raise CritScriptSyntaxError(line_number, line, "nested atk blocks")
+            atk_open = True
         elif eff_pattern.match(line):
             pass
         elif dmg_pattern.match(line):
             pass
         else:
             raise CritScriptSyntaxError(line_number, line, "unrecognized syntax")
+    
+    if crit_open:
+        raise CritScriptSyntaxError(line_number, line, "crit without endcrit")
+    
+    if do_open:
+        raise CritScriptSyntaxError(line_number, line, "do without done")
+    
+    if atk_open:
+        raise CritScriptSyntaxError(line_number, line, "atk without endatk")
         
     return stripped_code
         

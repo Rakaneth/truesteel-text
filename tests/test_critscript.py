@@ -89,7 +89,7 @@ done"""
         self.assertListEqual(em_compiled, self.emberspark_expected)
         self.assertListEqual(sv_compiled, self.savagery_expected)
     
-    def test_do_before_done(self):
+    def test_do_failures(self):
         do_before_done = """
         done
         atk(atp vs tou)
@@ -116,7 +116,17 @@ done"""
         do
             Effect Bleed 10
         """
+        nested_do = """
+        do 2 times
+            atk(atp vs dfp)
+                do 4 times
+                    Damage Body 1
+                done
+            endatk
+        done
+        """
         self.assertRaises(CritScriptSyntaxError, compile, do_before_done)
         self.assertRaises(CritScriptSyntaxError, compile, no_done)
         self.assertRaises(CritScriptSyntaxError, compile, no_do)
         self.assertRaises(CritScriptSyntaxError, compile, odd_do)
+        self.assertRaises(CritScriptSyntaxError, compile, nested_do)
