@@ -264,7 +264,7 @@ def crit_compile(code: Union[List[str], str]) -> List[str]:
         raise NoEndMissError(last_miss_idx, "miss")
     
     if self_open:
-        raise NoEndSelfError(last_miss_idx, "self")
+        raise NoEndSelfError(last_self_idx, "self")
     
     if hit_open:
         raise NoEndHitError(last_hit_idx, "hit")

@@ -9,9 +9,11 @@ class TestCritScript(TestCase):
     def setUp(self):
         self.emberspark_ary = [
             "atk(pwr vs dfp)",
+            "hit",
             "Damage Body 1d3+IMP",
             "Damage Soul 1d2+IMP",
             "Effect Soulburn 1",
+            "endhit",
             "crit",
             "Effect Soulburn 5",
             "endcrit",
@@ -19,9 +21,11 @@ class TestCritScript(TestCase):
         ]
         self.emberspark_expected = [
             "atk(pwr vs dfp)",
+            "hit",
             "damage body 1d3+imp",
             "damage soul 1d2+imp",
             "effect soulburn 1",
+            "endhit",
             "crit",
             "effect soulburn 5",
             "endcrit",
@@ -30,16 +34,20 @@ class TestCritScript(TestCase):
         self.savagery_ary = [
             "do 2 times",
             "atk(atp vs dfp)",
+            "hit",
             "Damage Body WEAPON",
             "Effect Bleed 1",
+            "endhit",
             "endatk",
             "done"
         ]
         self.savagery_expected = [
             "do 2 times",
             "atk(atp vs dfp)",
+            "hit",
             "damage body weapon",
             "effect bleed 1",
+            "endhit",
             "endatk",
             "done"  
         ]
@@ -50,10 +58,12 @@ class TestCritScript(TestCase):
 #in Soul damage as well as the Soulburn debuff for 1 turn. 
 #On crit, this deals an additional 5 turns of Soulburn.
 
-atk(pwr vs dfp) 
-    Damage Body 1d3+IMP 
-    Damage Soul 1d2+IMP
-    Effect Soulburn 1
+atk(pwr vs dfp)
+    hit
+        Damage Body 1d3+IMP 
+        Damage Soul 1d2+IMP
+        Effect Soulburn 1
+    endhit
     crit 
         Effect Soulburn 5
     endcrit
@@ -62,8 +72,10 @@ endatk"""
 #This attack hits 1 target twice and inflicts Bleed.
 do 2 times
     atk(atp vs dfp)
-        Damage Body WEAPON
-        Effect Bleed 1
+        hit
+            Damage Body WEAPON
+            Effect Bleed 1
+        endhit
     endatk
 done"""
         

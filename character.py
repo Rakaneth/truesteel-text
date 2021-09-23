@@ -126,12 +126,21 @@ class Character:
         return self.stats.smarts
     
     @property
+    def melee(self) -> int:
+        return self.stats.melee
+    
+    @property
+    def magic(self) -> int:
+        return self.stats.magic
+    
+    @property
     def atp(self) -> int:
-        return self.stats.melee + self.stats.skill
+        wpn = self.weapon.atp if self.weapon else 0
+        return self.stats.melee + self.stats.skill + wpn
     
     @property
     def dfp(self) -> int:
-        return self.stats.skill + max(self.stats.magic, self.stats.melee)
+        return self.stats.skill + max(self.stats.magic, self.stats.melee) + 50
     
     @property
     def tou(self) -> int:
@@ -153,7 +162,7 @@ class Character:
     
     @property
     def damage(self) -> Tuple[int, int]:
-        return self.weapon.damage if self.weapon else (1, 1)
+        return self.weapon.damage if self.weapon else "1+strmod"
     
     @property
     def body(self) -> int:

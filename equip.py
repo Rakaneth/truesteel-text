@@ -33,6 +33,7 @@ class WeaponStats(DurableItem):
     """Represents weapon stats."""
     damage: str
     crit: Optional[str] = None
+    atp: int=0
 
 @dataclass
 class ImplementStats(DurableItem):

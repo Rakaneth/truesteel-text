@@ -3,13 +3,15 @@ from equip import WeaponStats, ArmorStats, ImplementStats
 
 def make_weapon(build_id: str) -> WeaponStats:
     weapon_data = GAME_DATA["weapons"][build_id]
+    atp = weapon_data.get("atp", 0)
     
     return WeaponStats(
         durability=weapon_data["durability"],
         max_dur=weapon_data["durability"],
         crit=weapon_data["crit"],
         damage=weapon_data["damage"],
-        name=weapon_data["name"]
+        name=weapon_data["name"],
+        atp=atp
     )
 
 def make_armor(build_id: str) -> ArmorStats:

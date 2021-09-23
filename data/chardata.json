@@ -97,22 +97,39 @@
     "dagger": {
       "name": "Dagger",
       "durability": 50,
-      "damage": "1d4",
+      "damage": "1d4+sklmod",
       "cost": 1,
-      "crit": "effect stun 1"
+      "atp": 10,
+      "crit": "damage body 2d4+sklmod"
     },
     "shortsword": {
       "name": "Shortsword",
       "durability": 65,
-      "damage": "1d6",
+      "damage": "1d6+sklmod",
       "cost": 8,
-      "crit": "effect damage 2d4"
+      "crit": "effect bleed 1"
     },
     "longsword": {
       "name": "Longsword",
       "durability": 75,
-      "damage": "1d8",
-      "crit": "effect bleed 5"
+      "damage": "1d8+sklmod",
+      "cost": 16,
+      "crit": "effect bleed 1"
+    },
+    "maul": {
+      "name": "Maul",
+      "durability": 75,
+      "damage": "1d8+strmod+strmod",
+      "cost": 12,
+      "atp": -10,
+      "crit": "effect stun 2"
+    },
+    "mace": {
+      "name": "Mace",
+      "durability": 75,
+      "damage": "1d4+strmod",
+      "cost": 10,
+      "crit": "effect stun 1"
     }
   },
   "armor": {
