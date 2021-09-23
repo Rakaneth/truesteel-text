@@ -1,8 +1,10 @@
 [Emberspark:Target 1]
     atk(pwr vs dfp)
-        Damage Body 1d3+IMP
-        Damage Soul 1d2+IMP
-        Effect Soulburn 1
+        hit
+            Damage Body 1d3+IMP
+            Damage Soul 1d2+IMP
+            Effect Soulburn 1
+        endhit
     endatk
 [/Emberspark]
 
@@ -18,8 +20,10 @@
 [Savagery:Target 1]
     do 2 times
         atk(atp vs dfp)
-            Damage Body WEAPON
-            Effect Bleed 1
+            hit
+                Damage Body WEAPON
+                Effect Bleed 1
+            endhit
         endatk
     done
 [/Savagery]
