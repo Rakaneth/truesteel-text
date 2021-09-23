@@ -221,8 +221,10 @@ Do-blocks begin with `do (n) times` and end with `done`. Code run in do-blocks i
 #Savagery
 do 2 times
     atk(atp vs dfp)
-        Damage Body WEAPON
-        Effect Bleed 1
+        hit
+            Damage Body WEAPON
+            Effect Bleed 1
+        endhit
     endatk
 done
 ```
@@ -254,7 +256,9 @@ Crit-blocks begin with `crit` and end with `endcrit`. Code in crit-blocks is run
 ```
 #Heartseeker
 atk(atp vs dfp)
-    Damage Body WEAPON
+    hit
+        Damage Body WEAPON
+    endhit
     crit
         Damage Body 3d8+SKLMOD
     endcrit
@@ -270,7 +274,9 @@ Miss-blocks begin with `miss` and end with `endmiss`. Code in miss-blocks is run
 ```
 #Mind Sear
 atk(pwr vs wil)
-    Damage Mind 2d6+IMP
+    hit
+        Damage Mind 2d6+IMP
+    endhit
     miss
         Damage Mind 1d6+IMP
     endmiss
