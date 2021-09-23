@@ -19,31 +19,23 @@ class DurableItem:
     def is_destroyed(self) -> bool:
         return self.durability <= -self.max_dur
     
+    def __str__(self):
+        return f"{self.name} {self.durability}/{self.max_dur}"
+    
 
 @dataclass
 class ArmorStats(DurableItem):
     """Represents armor stats."""
     defense: int
 
-    def __str__(self):
-        return f"{self.name} (Def {self.defense} Dur {self.durability}/{self.max_dur})"
-
 @dataclass
 class WeaponStats(DurableItem):
     """Represents weapon stats."""
-    damage: Tuple[int, int]
+    damage: str
     crit: Optional[str] = None
-
-    def __str__(self):
-        low, high = self.damage
-        return f"{self.name} (Dmg {low}-{high} Dur {self.durability}/{self.max_dur})"
 
 @dataclass
 class ImplementStats(DurableItem):
     """Represents a magic implement."""
     pwr: int
-    damage: Tuple[int, int]
-
-    def __str__(self):
-        low, high = self.damage
-        return f"{self.name} (Pwr {self.pwr} Dmg {low}-{high} Dur {self.durability}/{self.max_dur})"
+    damage: str

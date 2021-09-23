@@ -46,7 +46,7 @@ def dice_str(d_str: str) -> int:
     bonus = 0
 
     if bonus_str:
-        bonus = int(dice_match.group("num_bonus"))
+        bonus = int(bonus_str)
     
     return dice(sides, num, bonus)
 

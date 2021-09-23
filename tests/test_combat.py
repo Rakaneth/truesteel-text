@@ -1,6 +1,6 @@
 from unittest import TestCase
 from unittest.mock import patch
-from combat import dice, dice_str, d100
+from combat import dice, dice_str, BadDiceError
 
 @patch('combat.randint', return_value=2)
 class TestDice(TestCase):
@@ -32,5 +32,7 @@ class TestDice(TestCase):
         self.assertEqual(roll6, 3)
         self.assertEqual(roll7, 3)
         self.assertEqual(roll8, 4)
+        self.assertRaises(BadDiceError, dice_str, "d6")
+        self.assertRaises(BadDiceError, dice_str, "4d")
 
 
