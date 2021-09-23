@@ -61,6 +61,26 @@ def dice_str_ext(d_str: str) -> int:
         acc += dice_str(term)
     return acc
 
+def dice_script_parse(character: Character, d_str: str) -> str:
+    """
+    Parses `d_str` and replaces character values with dice terms,
+    forming a string that can be rolled by `dice_str_ext`.
+    """
+    result = d_str
+    imp = character.implement.damage if character.implement else "0"
+    wpn = character.damage
+    wcrit = character.crit
+    strmod = f"{character.str_mod}"
+    sklmod = f"{character.skl_mod}"
+
+    result.replace("imp", imp)
+    result.replace("weaponcrit", wcrit)
+    result.replace("weapon", wpn)
+    result.replace("sklmod", sklmod)
+    result.replace("strmod", strmod)
+
+    return result
+
 
 
 def d100() -> int:

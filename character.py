@@ -161,8 +161,12 @@ class Character:
         return self.armor.defense if self.armor else 0
     
     @property
-    def damage(self) -> Tuple[int, int]:
+    def damage(self) -> str:
         return self.weapon.damage if self.weapon else "1+strmod"
+    
+    @property
+    def crit(self) -> str:
+        return self.weapon.crit if self.weapon else "effect stun 1"
     
     @property
     def body(self) -> int:
