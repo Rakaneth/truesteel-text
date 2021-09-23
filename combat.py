@@ -101,8 +101,10 @@ def tick_effects(victim: Character):
 def hit(attacker: Character, defender: Character, atk_stat: str, def_stat: str) -> RollResult:
     if atk_stat == "atp":
         atk_bonus = attacker.atp
+        atk_type = "melee"
     elif atk_stat == "pwr":
         atk_bonus = attacker.pwr
+        atk_type = "spell"
     else:
         raise BadStatError(f"{atk_stat} is not a valid attack stat")
     
@@ -115,11 +117,16 @@ def hit(attacker: Character, defender: Character, atk_stat: str, def_stat: str) 
     else:
         raise BadStatError(f"{def_stat} is not a valid defense stat")
     
+    if atk_type == "melee" and attacker.weapon:
+        attacker.weapon.durability -= 1
+    elif atk_type == "spell" and attacker.implement:
+        attacker.implement.durability -= 1
+    
     raw_roll = d100()
     atk_roll = atk_bonus + raw_roll
-    success = (atk_roll >= def_bonus)
     threshold = atk_roll - def_bonus
     crit = (threshold >= 50 or raw_roll >= 95)
+    success = (atk_roll >= def_bonus or crit)
 
     return RollResult(
         roll=atk_roll, 
