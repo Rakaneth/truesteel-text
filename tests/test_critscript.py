@@ -134,4 +134,54 @@ done"""
         self.assertRaises(cr.NoDoneError, cr.crit_compile, odd_do)
         self.assertRaises(cr.NestedDoBlockError, cr.crit_compile, nested_do)
     
+    def test_crit_failures(self):
+        crit_outside = """
+        crit
+            Damage Body 10d10
+        endcrit
+        """
+        endcrit_before_crit = """
+        endcrit
+            Damage Body 10d10
+        crit
+        """
+        no_crit = """
+        Damage Body 10d10
+        endcrit
+        """
+        no_endcrit = """
+        atk(atp vs dfp)
+            crit
+                Damage Body 10d10
+        endatk
+
+        """
+        odd_crit = """
+        atk(atp vs dfp)
+            crit
+                Damage Body 10d10
+            endcrit
+        endatk
+        atk(pwr vs tou)
+            crit
+        endatk
+        """
+        nested_crit = """
+        atk(atp vs dfp)
+            Damage Body 1d10
+            crit
+                Damage Body 10d10
+                crit
+                    Damage Soul 10d10
+                endcrit
+            endcrit
+        end
+        """
+
+        self.assertRaises(cr.CritWithoutAtkError, cr.crit_compile, crit_outside)
+        self.assertRaises(cr.EarlyEndCritError, cr.crit_compile, endcrit_before_crit)
+        self.assertRaises(cr.EarlyEndCritError, cr.crit_compile, no_crit)
+        self.assertRaises(cr.NoEndCritError, cr.crit_compile, no_endcrit)
+        self.assertRaises(cr.NoEndCritError, cr.crit_compile, odd_crit)
+        self.assertRaises(cr.NestedCritBlockError, cr.crit_compile, nested_crit)
 

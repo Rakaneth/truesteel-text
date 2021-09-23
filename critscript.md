@@ -217,8 +217,7 @@ done
 
 #### Atk ####
 
-Atk-blocks begin with `atk([stat] vs [stat])` and end with `endatk`. Code in atk-blocks is run if a successful attack is rolled with the given stats. The first stat can be one of `atp` or `pwr`, while the second stat can be any of `dfp`, `wil`,  or `tou`.
-**Any other values given will raise an error.**
+Atk-blocks begin with `atk([stat] vs [stat])` and end with `endatk`. Code in atk-blocks is run if a successful attack is rolled with the given stats. The first stat can be one of `atp` or `pwr`, while the second stat can be one of `dfp`, `wil`,  or `tou`.**Any other values given will raise an error.** Code in atk-blocks will be run separately for each attacker in the case of an `all` target; this means that each attacker gets a separate chance to resist the attack.
 
 #### Crit ####
 

@@ -1,4 +1,4 @@
-[Emberspark]
+[Emberspark:Target 1]
     atk(pwr vs dfp)
         Damage Body 1d3+IMP
         Damage Soul 1d2+IMP
@@ -6,7 +6,16 @@
     endatk
 [/Emberspark]
 
-[Savagery]
+[Shield:Target Self]
+    Effect Shield 10 100
+[/Shield]
+
+[Fireball:Target All]
+    Damage Body 1d6+IMP
+    Effect Burn 1
+[/Fireball]
+
+[Savagery:Target 1]
     do 2 times
         atk(atp vs dfp)
             Damage Body WEAPON
