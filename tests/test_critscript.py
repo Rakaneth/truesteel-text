@@ -6,7 +6,6 @@ from charfactory import build_char
 from equipfactory import make_armor, make_implement, make_weapon
 
 
-
 class TestCritScript(TestCase):
     def setUp(self):
         self.emberspark_ary = [

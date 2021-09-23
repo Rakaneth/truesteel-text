@@ -8,7 +8,7 @@ from effects import EffectNames
 DO_PATTERN = re.compile(r"do (?P<times>\d+) times")
 ATK_PATTERN = re.compile(r"atk\((?P<atk_stat>atp|pwr) vs (?P<defense_stat>\d+|tou|wil|dfp)\)")
 COMMENT_PATTERN = re.compile(r"#.*")
-DMG_PATTERN = re.compile(r"damage (?P<dtype>body|soul|mind) (?P<dmg>weapon|\d+d\d+(?:\+.+)*)")
+DMG_PATTERN = re.compile(r"damage (?P<dtype>body|soul|mind) (?P<dmg>(?:(?:[+-]?\d+d\d+)|(?:[+-]?(?:imp|sklmod|strmod|weapon))|(?:[+-]?\d+))+)")
 EFF_PATTERN = re.compile(r"effect (?P<eff>[a-z]+)\s+(?P<duration>\d+)(?:$|\s+(?P<potency>\d+))")
 EFF_NAMES = [name.value.lower() for name in EffectNames]
 
