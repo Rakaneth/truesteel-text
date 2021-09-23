@@ -1,0 +1,16 @@
+[Emberspark]
+    atk(pwr vs dfp)
+        Damage Body 1d3+IMP
+        Damage Soul 1d2+IMP
+        Effect Soulburn 1
+    endatk
+[/Emberspark]
+
+[Savagery]
+    do 2 times
+        atk(atp vs dfp)
+            Damage Body WEAPON
+            Effect Bleed 1
+        endatk
+    done
+[/Savagery]

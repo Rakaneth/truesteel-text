@@ -1,6 +1,6 @@
 import re
 
-from typing import Coroutine, Iterable, List, Union
+from typing import Iterable, List, Union
 from character import Character
 from combat import apply_effect, remove_effect, hit, damage
 from effects import EffectNames

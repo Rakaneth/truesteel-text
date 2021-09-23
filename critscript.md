@@ -7,7 +7,7 @@ CritScript makes an attempt to define certain game functions as data, so they ca
 ## Samples ##
 
 ### Weapons ###
-In System 12, weapons usually have some kind of effect on crit instead of the usual extra damage. These are one-liners, usually, but could theoretically be scripts unto themselves.
+In System 12, weapons usually have some kind of effect on crit in addition to or instead of the usual extra damage. These are one-liners, usually, but could theoretically be scripts unto themselves.
 
 * Shortswords: `Bleed 1`
 * Daggers: `Body 2d4+SKLMOD`
@@ -31,6 +31,13 @@ atk(pwr vs dfp)
 endatk
 ```
 
+* The Fireball spell:
+```
+#This spell hits all targets and applies the Burning effect.
+Damage Body 1d6+IMP
+Effect Burn 1
+```
+
 * The Savagery attack:
 ```
 #This attack hits 1 target twice and inflicts Bleed.
@@ -44,18 +51,22 @@ done
 
 ## Implementation ##
 
-CritScript is run against a target or targets. CritScript code is rendered into a list and interpreted against a target:
+Raw CritScript is compiled by `crit_compile` in the `critscript` module. CritScript's limited domain prevents it from having runtime errors, and so all errors are detected at compile time. The compiled CritScript becomes a compressed list of instructions, which is run against a target or targets by `run_script`.
+
+`crit_compile(code: Union[List[str], str]) -> List[str]`
 
 `run_script(user: Character, targets: Iterable[Character], script: List[str])`
 
 ## Usage ##
 
-Below is a sample JSON file that holds the above skills. This example pre-renders the lines of code into an array format, but another tool could do this from text files containing CritScript.
+### JSON File ###
+
+Below is a sample JSON file that holds the above skills. This example pre-renders the lines of code into an array format, which would be the best way to store CritScript in JSON or YAML files. **It is vitally important that the targeting scheme (currently just "1","all", or "self") be conveyed in the JSON file.**
 
 ```json
 {
     "emberspark": {
-        "targets": 1,
+        "targets": "1",
         "code": [
             "atk(pwr vs dfp)",
             "Damage Body 1d3+IMP",
@@ -67,8 +78,15 @@ Below is a sample JSON file that holds the above skills. This example pre-render
             "endatk"
         ]
     },
+    "fireball": {
+        "targets": "all",
+        "code": [
+            "Damage Body 2d6+IMP",
+            "Effect Burn 1",
+        ]
+    },
     "savagery": {
-        "targets": 1,
+        "targets": "1",
         "code": [
             "do 2 times",
             "atk(atp vs dfp)",
@@ -80,6 +98,163 @@ Below is a sample JSON file that holds the above skills. This example pre-render
     }
 }
 ```
+### CritData Files ###
+
+CritScript also has its own data format with the extension `.critdata`. The function `read_critdata` returns a `dict` mapping skill names to compiled, ready-to-use CritScript.
+
+`read_critdata(filename: str) -> dict`
+
+A CritData file looks like this:
+```
+[Soulspark:Target 1]
+    atk(pwr vs dfp)
+        Damage Body 1d3+IMP
+        Damage Soul 1d2+IMP
+        Effect Soulburn 1
+    endatk
+[/Soulspark]
+
+[Fireball:Target All]
+    Damage Body 1d6+IMP
+[/Fireball]
+
+[Savagery:Target 1]
+    Target 1
+    do 2 times
+        atk(atp vs dfp)
+            Damage Body WEAPON
+            Effect Bleed 1
+        endatk
+    done
+[/Savagery]
+```
+
+Each skill begins with an opening tag that combines the skill's name and targeting specification. 
+
+* `Target 1` means that the skill targets one enemy.
+* `Target All` means that the skill targets all enemies.
+* `Target Self` means that the skill targets the user.
+
+The CritScript code defining what the skill does follows the opening tag. Finally, the closing tag repeats the name of the skill with a backslash, much in the style of BBCode.
+
+## Reference ##
+
+CritScript is written from the point of view of the user of the skill. It is assumed that the code is being run against a selected target or group of enemies. 
+
+### Comments ###
+
+Lines beginning with `#` are ignored, and so can be used for comments. **Inline comments are not currently supported.**
+
+### Casing ###
+
+Casing does not matter. `EFFECT BURN 1`, `Effect Burn 1`, `effect burn 1`, and `EfFeCt BuRn 1` are all valid.
+
+### Effects ###
+
+A line in the form of `Effect [name of effect] [duration of effect]([potency of effect]` applies the effect to all targets with the given duration and potency. The name given must be a valid effect.
+* TODO: List of valid effect names
+
+#### Effect Samples ####
+* `Effect Bleed 1` applies the Bleed effect for 1 turn.
+* `Effect Shield 10 100` applies the Shield effect for 10 turns at 100 potency.
+
+### Damage ###
+
+A line in the form of `Damage [Body|Mind|Soul] [dice-notation|WEAPON]` applies the listed damage type in the amount specified by the dice notation. `WEAPON` replaces the dice notation and inserts the damage of the user's weapon (including crit effects). One of `IMP`, `SKLMOD`, or `STRMOD` can be added to the dice notation to include the user's implement damage, skill-based modifier, or strength-based modifier respectively.
+
+#### Damage Examples ####
+Our user for the following samples has this loadout:
+
+```
+Str 25 (+2 strength mod)
+Skl 15 (+1 skill mod)
+
+Weapon: Dagger (1d4+sklmod, crit: Damage Body 2d4)
+Implement: Brass Rod(1d3)
+```
+
+* `Damage Body 1d3` deals 1d3 Body damage
+* `Damage Body 1d3+1` deals 1d3+1 Body damage
+* `Damage Body 1d3+STRMOD` deals 1d3+2 Body damage.
+* `Damage Body 1d3+SKLMOD` deals 1d3+1 Body damage.
+* `Damage Body WEAPON` deals 1d4+1 Body damage.
+* `Damage Soul 1d6+2+IMP` deals 1d3+1d6+2 Soul damage.
+
+### Blocks ###
+
+There are five block constructs in CritScript: `do`, `atk`, `crit`, `miss` and `self`. 
+
+#### Self (NOT IMPLEMENTED YET) ####
+
+Self-blocks begin with `self` and end with `endself`. Code run in a self-block is always applied to the user. This allows for things like risky powers that damage oneself to use or self-buffs.
+
+```
+#Shield spell
+self
+    Effect Shield 10 100
+endself
+
+#Soul Sacrifice spell
+self
+    Damage Soul 1d3
+endself
+Damage Body 2d10+IMP
+```
+
+#### Do ####
+
+Do-blocks begin with `do (n) times` and end with `done`. Code run in do-blocks is repeated `n` times.
+
+```
+#Savagery
+do 2 times
+    atk(atp vs dfp)
+        Damage Body WEAPON
+        Effect Bleed 1
+    endatk
+done
+```
+
+#### Atk ####
+
+Atk-blocks begin with `atk([stat] vs [stat])` and end with `endatk`. Code in atk-blocks is run if a successful attack is rolled with the given stats. The first stat can be one of `atp` or `pwr`, while the second stat can be any of `dfp`, `wil`,  or `tou`.
+**Any other values given will raise an error.**
+
+#### Crit ####
+
+Crit-blocks begin with `crit` and end with `endcrit`. Code in crit-blocks is run if the attack roll generated by a previous atk-block scored a critical hit. 
+* **It is an error to use a crit-block outside of an atk-block.** 
+* **It is also an error to begin a crit-block before the effects of the atk-block.**
+
+```
+#Heartseeker
+atk(atp vs dfp)
+    Damage Body WEAPON
+    crit
+        Damage Body 3d8+SKLMOD
+    endcrit
+endatk
+```
+
+#### Miss (NOT IMPLEMENTED YET) ####
+
+Miss-blocks begin with `miss` and end with `endmiss`. Code in miss-blocks is run if the attack roll generated by a previous atk-block missed. 
+* **It is an error to use a miss-block outside of an atk-block.** 
+* **It is also an error to begin a miss-block before the effects of the atk-block.**
+
+```
+#Mind Sear
+atk(pwr vs wil)
+    Damage Mind 2d6+IMP
+    miss
+        Damage Mind 1d6+IMP
+    endmiss
+endatk 
+```
+
+
+
+
 
 
 
