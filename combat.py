@@ -69,15 +69,13 @@ def dice_script_parse(character: Character, d_str: str) -> str:
     result = d_str
     imp = character.implement.damage if character.implement else "0"
     wpn = character.damage
-    wcrit = character.crit
     strmod = f"{character.str_mod}"
     sklmod = f"{character.skl_mod}"
 
-    result.replace("imp", imp)
-    result.replace("weaponcrit", wcrit)
-    result.replace("weapon", wpn)
-    result.replace("sklmod", sklmod)
-    result.replace("strmod", strmod)
+    result=result.replace("weapon", wpn)
+    result=result.replace("imp", imp)
+    result=result.replace("sklmod", sklmod)
+    result=result.replace("strmod", strmod)
 
     return result
 

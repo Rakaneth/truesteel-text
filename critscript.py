@@ -248,6 +248,8 @@ def crit_compile(code: Union[List[str], str]) -> List[str]:
                 raise BadEffectError(line_no, line)
         elif DMG_PATTERN.match(line):
             pass
+        elif line == "weaponcrit":
+            pass
         else:
             raise UnknownCritSyntaxError(line_no, line)
     

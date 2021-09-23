@@ -1,8 +1,10 @@
 import critscript as cr
+import combat as cbt
 
 from unittest import TestCase
 from charfactory import build_char
 from equipfactory import make_armor, make_implement, make_weapon
+
 
 
 class TestCritScript(TestCase):
@@ -196,4 +198,30 @@ done"""
         self.assertRaises(cr.NoEndCritError, cr.crit_compile, no_endcrit)
         self.assertRaises(cr.NoEndCritError, cr.crit_compile, odd_crit)
         self.assertRaises(cr.NestedCritBlockError, cr.crit_compile, nested_crit)
+
+    def test_dice_string_base(self):
+        waryar = build_char("human", "warrior", "Fred")
+        test_string = "1d3+imp+weapon+strmod+sklmod"
+        test1 = cbt.dice_script_parse(waryar, test_string)
+        self.assertEqual(test1, "1d3+0+1+2+2+2")
+        
+    def test_dice_string_equipped(self):
+        waryar = build_char("human", "warrior", "Fred")
+        wpn = make_weapon("mace")
+        test_string = "1d3+imp+weapon+strmod+sklmod"
+        waryar.weapon = wpn
+        test2 = cbt.dice_script_parse(waryar, test_string)
+        self.assertEqual(test2, "1d3+0+1d4+2+2+2")
+    
+    def test_dice_string_with_implement(self):
+        waryar = build_char("human", "warrior", "Fred")
+        wpn = make_weapon("mace")
+        imp = make_implement("oak staff")
+        test_string = "1d3+imp+weapon+strmod+sklmod"
+        waryar.weapon = wpn
+        waryar.implement = imp
+        test3 = cbt.dice_script_parse(waryar, test_string)
+        self.assertEqual(test3, "1d3+1d6+1d4+2+2+2")
+
+
 
