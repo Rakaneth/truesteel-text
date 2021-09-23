@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Tuple, Optional, List, Set
+from typing import Tuple, Optional, List
 from equip import WeaponStats, ArmorStats, ImplementStats
 from enum import Enum, auto
 
@@ -92,14 +92,14 @@ class Character:
     armor: Optional[ArmorStats] = None
     implement: Optional[ImplementStats] = None
     sort_index: int = field(repr=False, init=False)
-    effects: Set[Effect] = field(repr=False, init=False)
+    effects: dict[str, Effect] = field(repr=False, init=False)
 
     def __post_init__(self):
         self.sort_index = self.stats.speed
         self.stats.body = self.max_body
         self.stats.soul = self.max_soul
         self.stats.mind = self.max_mind
-        self.effects = set()
+        self.effects = dict()
 
     @property
     def strength(self) -> int:
@@ -170,7 +170,7 @@ class Character:
     
     @body.setter
     def body(self, val: int):
-        self.stats.body = sorted(0, val, self.max_body)[1]
+        self.stats.body = sorted((0, val, self.max_body))[1]
     
     @property
     def mind(self) -> int:
@@ -178,7 +178,7 @@ class Character:
     
     @mind.setter
     def mind(self, val: int):
-        self.stats.mind = sorted(0, val, self.max_mind)[1]
+        self.stats.mind = sorted((0, val, self.max_mind))[1]
     
     @property
     def soul(self) -> int:
@@ -186,7 +186,7 @@ class Character:
     
     @soul.setter
     def soul(self, val: int):
-        self.stats.soul = sorted(0, val, self.max_soul)[1]
+        self.stats.soul = sorted((0, val, self.max_soul))[1]
     
     @property
     def alive(self) -> bool:
@@ -283,11 +283,7 @@ class Character:
         Finds an effect named `eff_name` in the character's effect list.
         Returns `None` if not found.
         """
-        effs = [eff for eff in self.effects if eff.name == eff_name]
-        if len(effs) == 0:
-            return None
-        
-        return effs[0]
+        return self.effects.get(eff_name, None)
 
 
 

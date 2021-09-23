@@ -1,6 +1,7 @@
 from character import BaseStats, Effect, Character, DamageType
 from random import randint
 from enum import Enum
+from combat import damage, dice_str_ext
 
 
 class EffectNames(Enum):
@@ -24,18 +25,22 @@ class Damage(Effect):
     Describes an immediate instant damage effect.
     Used by spells and crit effects.
     """
-    def __init__(self, low: int, high: int, dtype: DamageType):
-        super().__init__(EffectNames.DAMAGE, Effect.IMMEDIATE, 0)
-        self.potency = randint(low, high)
+    def __init__(
+        self, 
+        dmg: str,
+        dtype: DamageType,
+        armor_ok: bool=True,
+        shield_ok: bool=True
+    ):
+        """`dmg` should be a rollable string (see `combat.dice_str_ext`"""
+        super().__init__(EffectNames.DAMAGE.value, Effect.IMMEDIATE, 0)
+        self.potency = dice_str_ext(dmg)
         self.type = dtype
+        self.armor_ok = armor_ok
+        self.shield_ok = shield_ok
     
     def on_apply(self, bearer: Character):
-        if self.type == DamageType.BODY:
-            bearer.body -= self.potency
-        elif self.type == DamageType.MIND:
-            bearer.mind -= self.potency
-        elif self.type == DamageType.SOUL:
-            bearer.soul -= self.potency
+        damage(bearer, self.potency, self.type, self.armor_ok, self.shield_ok)
 
 class DOT(Effect):
     """
@@ -43,28 +48,34 @@ class DOT(Effect):
     This is an abstract class.
     """
 
-    def __init__(self, name: str, duration: int, potency: int, dtype: DamageType):
+    def __init__(
+        self, 
+        name: str, 
+        duration: int, 
+        potency: int, 
+        dtype: DamageType, 
+        armor_ok: bool, 
+        shield_ok: bool
+    ):
         super().__init__(name, duration, potency)
         self.type = dtype
+        self.armor_ok = armor_ok
+        self.shield_ok = shield_ok
     
     def on_tick(self, bearer: Character):
-        if self.type == DamageType.BODY:
-            bearer.body -= self.potency
-        elif self.type == DamageType.MIND:
-            bearer.mind -= self.potency
-        elif self.type == DamageType.SOUL:
-            bearer.soul -= self.potency
+        damage(bearer, self.potency, self.type, self.armor_ok, self.shield_ok)
 
 class Burn(DOT):
     """
     Describes a burning effect.
-    Burning does 3 BODY damage per tick. 
+    Burning does 3 BODY damage per tick.
+    Burn damage can be stopped by shields, but not armor.
     Stacks duration.
     Generally caused by magical effects.
     """
 
     def __init__(self, duration: int):
-        super().__init__(EffectNames.BURN, duration, 3, DamageType.BODY)
+        super().__init__(EffectNames.BURN.value, duration, 3, DamageType.BODY, False, True)
     
     def on_merge(self, eff: Effect):
         self.duration += eff.duration
@@ -73,16 +84,33 @@ class Bleed(DOT):
     """
     Describes a bleeding effect.
     Bleeding does 1 BODY damage per tick.
+    Bleed damage cannot be stopped by shields or armor.
     Stacks intensity, refreshes duration.
     Generally caused by big attacks.
     """
 
     def __init__(self, duration: int):
-        super().__init__(EffectNames.BLEED, duration, 1, DamageType.BODY)
+        super().__init__(EffectNames.BLEED.value, duration, 1, DamageType.BODY, False, False)
     
     def on_merge(self, eff: Effect):
         self.duration = eff.duration
-        self.potency += 1
+        self.potency += eff.potency
+
+class Soulburn(DOT):
+    """
+    Describes a Soulburn effect.
+    Soulburn does 1 SOUL damage per tick, 
+    increasing by 1 with each new Soulburn effect.
+    Soulburn damage cannot be stopped by shields or armor.
+    Stacks intensity and duration.
+    Generally caused by foul warlock spells.
+    """
+    def __init__(self, duration: int):
+        super().__init__(EffectNames.SOULBURN.value, duration, 1, DamageType.SOUL, False, False)
+    
+    def on_merge(self, eff: Effect):
+        self.duration += eff.duration
+        self.potency += eff.potency
     
 class StatChange(Effect):
     """
@@ -117,7 +145,7 @@ class Might(StatChange):
     
     def __init__(self, duration: int, base_stats: BaseStats):
         super().__init__(
-            EffectNames.MIGHT, 
+            EffectNames.MIGHT.value, 
             duration, 
             base_stats,
             BaseStats(strength=10, stamina=10)
@@ -131,7 +159,7 @@ class Weakness(StatChange):
     """
     def __init__(self, duration: int, base_stats: BaseStats):
         super().__init__(
-            EffectNames.WEAKNESS,
+            EffectNames.WEAKNESS.value,
             duration,
             base_stats,
             BaseStats(strength=-10, stamina=-10)
@@ -146,9 +174,9 @@ class Shield(Effect):
     """
 
     def __init__(self, duration: int, potency: int):
-        super().__init__(EffectNames.SHIELD, duration, potency)
+        super().__init__(EffectNames.SHIELD.value, duration, potency)
 
-    def on_tick(self):
+    def on_tick(self, bearer: Character):
         if self.potency <= 0:
             self.duration = 0
 
@@ -161,7 +189,7 @@ class Stun(Effect):
     """
 
     def __init__(self, duration: int):
-        super().__init__(EffectNames.STUN, duration, 0)
+        super().__init__(EffectNames.STUN.value, duration, 0)
 
 
 

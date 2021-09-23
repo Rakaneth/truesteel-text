@@ -72,7 +72,8 @@ def apply_effect(victim: Character, eff: Effect):
     if maybe_eff:
         maybe_eff.on_merge(eff)
     else:
-        victim.effects.add(eff)
+        if eff.duration != eff.IMMEDIATE:
+            victim.effects[eff.name] = eff
         eff.on_apply(victim)
 
 def remove_effect(victim: Character, eff: Effect, raw=False):
@@ -83,19 +84,19 @@ def remove_effect(victim: Character, eff: Effect, raw=False):
     """
     if not raw:
         eff.on_remove(victim)
-    victim.effects.remove(eff)
+    del victim.effects[eff.name]
 
 def tick_effects(victim: Character):
     """Ticks all effects on `victim` and removes them if their durations are 0 or less."""
     to_remove: List[Effect] = []
-    for eff in victim.effects:
+    for eff in victim.effects.values():
         eff.duration -= 1
         eff.on_tick(victim)
         if eff.duration <= 0:
             to_remove.append(eff)
     
     for done_effect in to_remove:
-        remove_effect(done_effect, victim)
+        remove_effect(victim, done_effect)
 
 def hit(attacker: Character, defender: Character, atk_stat: str, def_stat: str) -> RollResult:
     if atk_stat == "atp":
