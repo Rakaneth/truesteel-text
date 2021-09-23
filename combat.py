@@ -7,7 +7,8 @@ from random import randint
 
 
 RollResult = namedtuple('RollResult', ('roll', 'target', 'success', 'threshold', 'crit'))
-DICE_PATTERN = re.compile(r"(?P<num>\d+)d(?P<sides>\d+)(?:(?P<num_bonus>(?:\+|\-)\d+))?(?:\+(?P<stat_bonus>imp|strmod|sklmod))?")
+#DICE_PATTERN = re.compile(r"(?P<num>\d+)d(?P<sides>\d+)(?:(?P<num_bonus>(?:\+|\-)\d+))?(?:\+(?P<stat_bonus>imp|strmod|sklmod))?")
+DICE_PATTERN = r"(?:(?:[+-]?\d+d\d+)|(?:[+-]?\d+))"
 
 class BadStatError(Exception):
     """Custom exception for bad stats passed to `attack`."""
@@ -31,24 +32,36 @@ def dice(sides: int, num: int=1, bonus=0) -> int:
     return acc + bonus
 
 def dice_str(d_str: str) -> int:
+    """Parses a simple dice string `d_str` with no modifiers."""
+    basic_dice = r"[+-]?\d+d\d+"
+    basic_num = r"[+-]?\d+"
+    if re.match(basic_dice, d_str):
+        ns, ds = d_str.split("d")
+        roll = dice(int(ds), abs(int(ns)))
+        if d_str.startswith("-"):
+            return -roll
+        return roll
+    elif re.match(basic_num, d_str):
+        return int(d_str)
+    else:
+        raise BadDiceError(d_str)
+
+
+def dice_str_ext(d_str: str) -> int:
     """
     Parses `d_str` in standard dice notation and rolls the result.
-    Discards character values like +IMP or +STRMOD.
-    Used primarily for rolling weapon damage.
+    `d_str` should only include dice strings (like 1d4) or numbers,
+    chained together by + or - signs.
+    Can roll long strings of dice.
+    Intended to be used to roll post-processed dice strings from CritScript.
     """
-    dice_match = DICE_PATTERN.match(d_str)
-    if not dice_match:
-        raise BadDiceError(d_str)
-    
-    num = int(dice_match.group("num"))
-    sides = int(dice_match.group("sides"))
-    bonus_str = dice_match.groupdict().get("num_bonus", None)
-    bonus = 0
+    dice_matches = re.findall(DICE_PATTERN, d_str)
+    acc = 0
+    for term in dice_matches:
+        acc += dice_str(term)
+    return acc
 
-    if bonus_str:
-        bonus = int(bonus_str)
-    
-    return dice(sides, num, bonus)
+
 
 def d100() -> int:
     """Convenience method for rolling a d100. Most rolls in the combat system are d100s."""
