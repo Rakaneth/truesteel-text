@@ -1,4 +1,15 @@
-[Emberspark:Target 1]
+[Attack:Target 1:warrior,magician,warlock]
+    atk(atp vs dfp)
+        hit
+            Damage Body WEAPON
+        endhit
+        crit
+            WEAPONCRIT
+        endcrit
+    endatk
+[/Attack]
+
+[Emberspark:Target 1:magician]
     atk(pwr vs dfp)
         hit
             Damage Body 1d3+IMP
@@ -8,16 +19,16 @@
     endatk
 [/Emberspark]
 
-[Shield:Target Self]
+[Shield:Target Self:magician,warlock]
     Effect Shield 10 100
 [/Shield]
 
-[Fireball:Target All]
+[Fireball:Target All:magician]
     Damage Body 1d6+IMP
     Effect Burn 1
 [/Fireball]
 
-[Savagery:Target 1]
+[Savagery:Target 1:warrior]
     do 2 times
         atk(atp vs dfp)
             hit

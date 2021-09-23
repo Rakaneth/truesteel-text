@@ -114,7 +114,18 @@ CritScript also has its own data format with the extension `.critdata`. The func
 
 A CritData file looks like this:
 ```
-[Soulspark:Target 1]
+[Attack:Target 1:warrior,magician,warlock]
+    atk(atp vs dfp)
+        hit
+            Damage Body WEAPON
+        endhit
+        crit
+            WEAPONCRIT
+        endcrit
+    endatk
+[/Attack]
+
+[Emberspark:Target 1:magician]
     atk(pwr vs dfp)
         hit
             Damage Body 1d3+IMP
@@ -122,14 +133,18 @@ A CritData file looks like this:
             Effect Soulburn 1
         endhit
     endatk
-[/Soulspark]
+[/Emberspark]
 
-[Fireball:Target All]
+[Shield:Target Self:magician,warlock]
+    Effect Shield 10 100
+[/Shield]
+
+[Fireball:Target All:magician]
     Damage Body 1d6+IMP
+    Effect Burn 1
 [/Fireball]
 
-[Savagery:Target 1]
-    Target 1
+[Savagery:Target 1:warrior]
     do 2 times
         atk(atp vs dfp)
             hit
@@ -141,7 +156,7 @@ A CritData file looks like this:
 [/Savagery]
 ```
 
-Each skill begins with an opening tag that combines the skill's name and targeting specification. 
+Each skill begins with an opening tag that combines the skill's name, targeting specification, and classes that can use the skill.
 
 * `Target 1` means that the skill targets one enemy.
 * `Target All` means that the skill targets all enemies.
@@ -176,7 +191,7 @@ A line in the form of `Effect [name of effect] [duration of effect]([potency of 
 
 ### Damage ###
 
-A line in the form of `Damage [Body|Mind|Soul] [dice-notation|WEAPON]` applies the listed damage type in the amount specified by the dice notation. `WEAPON` replaces the dice notation and inserts the damage of the user's weapon (including crit effects). One of `IMP`, `SKLMOD`, or `STRMOD` can be added to the dice notation to include the user's implement damage, skill-based modifier, or strength-based modifier respectively.
+A line in the form of `Damage [Body|Mind|Soul] [dice-notation|WEAPON]` applies the listed damage type in the amount specified by the dice notation. `WEAPON` replaces the dice notation and inserts the damage of the user's weapon (including crit effects). Any number of `IMP`, `SKLMOD`, or `STRMOD` can be added to the dice notation to include the user's implement damage, skill-based modifier, or strength-based modifier respectively.
 
 #### Damage Examples ####
 Our user for the following samples has this loadout:
