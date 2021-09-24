@@ -2,7 +2,7 @@ import re
 
 from typing import Iterable, List, Union
 from character import Character
-from combat import apply_effect, remove_effect, hit, damage
+from combat import apply_effect, remove_effect, hit, damage, RollResult
 from effects import EffectNames
 
 DO_PATTERN = re.compile(r"do (?P<times>\d+) times")
@@ -134,6 +134,10 @@ class HitWithoutAtkError(CritScriptSyntaxError):
 class MissWithoutAtkError(CritScriptSyntaxError):
     def __init__(self, line_no: int, line: str):
         super().__init__(line_no, line, "miss outside of atk block")
+
+
+
+
 
 def crit_compile(code: Union[List[str], str]) -> List[str]:
     """
@@ -272,5 +276,48 @@ def crit_compile(code: Union[List[str], str]) -> List[str]:
         raise NoEndHitError(last_hit_idx, "hit")
         
     return stripped_code
+
+def run_atk_block(
+    user: Character, 
+    cur_target: Character, 
+    roll_result: RollResult, 
+    subscript: List[str]
+):
+    subinst_counter = 0
+    while subinst_counter < len(subscript):
+        cur_cmd = subscript[subinst_counter]
+        #if 
+
+
+
+
+def run_script(
+    user: Character, 
+    targets: Iterable[Character],
+    script: List[str]
+):
+    inst_counter = 0
+
+    cur_cmd = script[inst_counter]
+    do_match = DO_PATTERN.match(cur_cmd)
+    atk_match = ATK_PATTERN.match(cur_cmd)
+
+    if inst_counter >= len(script):
+        return
+    elif do_match:
+        num_times = int(do_match.group("times"))
+        done_idx = script.index("done", inst_counter)
+        for _ in range(num_times):
+            run_script(user, targets, script[inst_counter+1:done_idx])
+        inst_counter = done_idx
+    elif cur_cmd == "self":
+        endself_idx = script.index("endself", inst_counter)
+        run_script(user, (user,), script[inst_counter+1:endself_idx])
+        inst_counter = endself_idx
+    elif atk_match:
+        endatk_idx = script.index("endatk", inst_counter)
+        for target in targets:
+            atk_result = hit(user, target, atk_match.group("atk_stat"), atk_match.group("def_stat"))
+            run_atk_block(user, target, atk_result, script[inst_counter+1:endatk_idx])
 
 

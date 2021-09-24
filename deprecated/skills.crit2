@@ -1,0 +1,47 @@
+atk(atp vs dfp)
+    hit
+        Damage Body WEAPON
+    crit
+        WEAPONCRIT
+end
+
+atk(pwr vs dfp)
+    hit
+        Damage Body 1d3+IMP
+        Damage Soul 1d2+IMP
+        Effect Soulburn 1
+end
+
+Damage Body 1d6+IMP
+Effect Burn 1
+end
+
+do 2
+    atk(atp vs dfp)
+        hit
+            Damage Body WEAPON
+            Effect Bleed 1
+        miss
+            Effect Bleed 1
+        crit
+            Damage Body WEAPON
+            WEAPONCRIT
+            Effect Bleed 1
+done
+
+(OP_PUSH_DO_RETURN_LOCATION, 2)
+(OP_ATK, 'atp', 'dfp') -> {'Brad': RollResult, 'Jim': RollResult...}
+(OP_START_HIT_BLOCK)
+(OP_PUSH_DAMAGE, DamageTypes.Body)
+(OP_PUSH_WEAPON)
+(OP_APPL)
+(OP_EFFECT, Bleed, 1, None)
+(OP_START_MISS_BLOCK)
+(OP_EFFECT, Bleed, 1, None)
+(OP_START_CRIT_BLOCK)
+(OP_DAMAGE, DamageTypes.Body, OP_GET_WEAPON) ->
+(OP_GET_WEAPON)
+
+
+
+
