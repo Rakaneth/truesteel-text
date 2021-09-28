@@ -82,6 +82,28 @@ class BaseStats:
             self.mind,
             self.soul
         )
+    
+    @classmethod
+    def from_dict(cls, **kwargs) -> BaseStats:
+        strength = kwargs.get("str", 0)
+        stam = kwargs.get("stam", 0)
+        spd = kwargs.get("spd", 0)
+        skl = kwargs.get("skl", 0)
+        sag = kwargs.get("sag", 0)
+        smt = kwargs.get("smt", 0)
+        melee = kwargs.get("melee", 0)
+        magic = kwargs.get("magic", 0)
+
+        return BaseStats(
+            strength=strength,
+            stamina=stam,
+            speed=spd,
+            skill=skl,
+            sagacity=sag,
+            smarts=smt,
+            melee=melee,
+            magic=magic
+        )
 
 @dataclass
 class Character:

@@ -1,4 +1,3 @@
-import json
 import tkinter as tk
 
 from character import Character, BaseStats
@@ -13,7 +12,9 @@ def main():
     chargen = None
     
     def new_character():
-        chargen = CharGenFrame(root)
+        nonlocal chargen
+        if chargen is None:
+            chargen = CharGenFrame(root)
     
     def open_character():
         pass

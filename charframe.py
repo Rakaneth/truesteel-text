@@ -32,40 +32,40 @@ class CharBasedFrame(Frame):
 
 class StatFrame(CharBasedFrame):
     """Displays a set of base stats."""
-    def __init__(self, master, stats: BaseStats):
-        super().__init__(master, None)
-        self.stats = stats
+    def __init__(self, master, character: Character):
+        super().__init__(master, character)
+        
         self.str_caption = create_label(self, "Strength", 1, 0)
-        self.str_label, self.str_value = create_int_label(self, 1, 1, self.stats.strength)
+        self.str_label, self.str_value = create_int_label(self, 1, 1, self.character.strength)
 
         self.stam_caption = create_label(self, "Stamina", 2, 0)
-        self.stam_label, self.stam_value = create_int_label(self, 2, 1, self.stats.stamina)
+        self.stam_label, self.stam_value = create_int_label(self, 2, 1, self.character.stamina)
 
         self.spd_caption = create_label(self, "Speed", 3, 0)
-        self.spd_label, self.spd_value = create_int_label(self, 3, 1, self.stats.speed)
+        self.spd_label, self.spd_value = create_int_label(self, 3, 1, self.character.speed)
 
         self.skl_caption = create_label(self, "Skill", 4, 0)
-        self.skl_label, self.skl_value = create_int_label(self, 4, 1, self.stats.skill)
+        self.skl_label, self.skl_value = create_int_label(self, 4, 1, self.character.skill)
 
         self.sag_caption = create_label(self, "Sagacity", 5, 0)
-        self.sag_label, self.sag_value = create_int_label(self, 5, 1, self.stats.sagacity)
+        self.sag_label, self.sag_value = create_int_label(self, 5, 1, self.character.sagacity)
 
         self.smt_caption = create_label(self, "Smarts", 6, 0)
-        self.smt_label, self.smt_value = create_int_label(self, 6, 1, self.stats.smarts)
+        self.smt_label, self.smt_value = create_int_label(self, 6, 1, self.character.smarts)
 
         self.melee_caption = create_label(self, "Melee", 7, 0)
-        self.melee_label, self.melee_value = create_int_label(self, 7, 1, self.stats.melee)
+        self.melee_label, self.melee_value = create_int_label(self, 7, 1, self.character.melee)
 
         self.magic_caption = create_label(self, "Magic", 8, 0)
-        self.magic_label, self.magic_value = create_int_label(self, 8, 1, self.stats.magic)
+        self.magic_label, self.magic_value = create_int_label(self, 8, 1, self.character.magic)
 
     def refresh(self):
-        self.str_value.set(self.stats.strength)
-        self.stam_value.set(self.stats.stamina)
-        self.spd_value.set(self.stats.speed)
-        self.skl_value.set(self.stats.skill)
-        self.sag_value.set(self.stats.sagacity)
-        self.smt_value.set(self.stats.smarts)
+        self.str_value.set(self.character.strength)
+        self.stam_value.set(self.character.stamina)
+        self.spd_value.set(self.character.speed)
+        self.skl_value.set(self.character.skill)
+        self.sag_value.set(self.character.sagacity)
+        self.smt_value.set(self.character.smarts)
 
 class DerivedStatFrame(CharBasedFrame):
     """Displays a set of derived stats."""
@@ -152,7 +152,7 @@ class CharFrame(Frame):
         name_label = Label(self, text=character.name)
         name_label.grid(column=0, row=0, columnspan=3)
         
-        self.stat_frame = StatFrame(self, self.character.stats)
+        self.stat_frame = StatFrame(self, self.character)
         self.stat_frame.grid(row=1, column=0)
         
         self.dstat_frame = DerivedStatFrame(self, self.character)
